@@ -490,25 +490,40 @@ function closeModal() {
 function addToCart() {
     const fullTitle = document.getElementById('drinkTitle').textContent;
     const [series, drink] = fullTitle.split(' - ');
-    const isNonBeverageSeries = ["厚片系列", "鬆餅系列", "盒酥系列", "挫冰系列", "水果切盤", "季節限定！"].includes(series);
     
     let cartItemText = drink;
     let price;
     
-    if (isNonBeverageSeries) {
-        // 非飲料系列直接使用基礎價格
+    // 判斷是否為特殊系列（需要顯示加料的非飲料系列）
+    const isSpecialSeries = (series === "厚片系列" && drink === "厚片吐司") ||
+                           (series === "鬆餅系列" && drink === "現烤鬆餅") ||
+                           (series === "盒酥系列" && drink === "熱壓吐司A加B");
+                           
+    // 判斷是否為完全不需選項的非飲料系列
+    const isSimpleSeries = ["挫冰系列", "水果切盤", "季節限定！"].includes(series);
+    
+    if (isSimpleSeries) {
+        // 完全不需選項的非飲料系列
         price = menuStructure[series][drink].basePrice;
+    } else if (isSpecialSeries) {
+        // 需要加料的非飲料系列
+        const toppings = Array.from(document.querySelectorAll('input[type="checkbox"]:checked'))
+            .map(cb => cb.parentNode.textContent.trim())
+            .filter(text => !text.includes('環保杯'));
+        if (toppings.length > 0) {
+            cartItemText += ` - 加料: ${toppings.join(', ')}`;
+        }
+        price = calculatePrice(series, drink, null, toppings, false);
     } else {
-        // 飲料系列顯示所有選項
+        // 飲料系列
         const size = document.querySelector('input[name="size"]:checked').value;
         const ice = document.querySelector('input[name="ice"]:checked').value;
         const sweetness = document.getElementById('sweetness').value;
         const toppings = Array.from(document.querySelectorAll('input[type="checkbox"]:checked'))
-            .map(cb => cb.value)
-            .filter(value => value !== 'ecoCup');
+            .map(cb => cb.parentNode.textContent.trim())
+            .filter(text => !text.includes('環保杯'));
         const useEcoCup = document.getElementById('ecoCup').checked;
         
-        // 更新顯示格式
         cartItemText += ` (${size})`;
         cartItemText += ` - ${ice}`;
         cartItemText += ` - ${sweetness}分甜`;
@@ -595,7 +610,11 @@ function updateTotalPrice() {
 function checkout() {
     const note = document.getElementById('note').value;
     const cartItems = Array.from(document.getElementsByClassName('cart-item'))
-        .map(item => item.textContent.trim())
+        .map(item => {
+            // 移除刪除按鈕的文字，只保留訂單內容
+            const itemText = item.textContent.replace('×', '').trim();
+            return itemText;
+        })
         .join('\n');
     const total = document.getElementById('totalPrice').textContent;
     
@@ -609,7 +628,7 @@ ${cartItems}
     // 複製到剪貼簿
     navigator.clipboard.writeText(orderContent)
         .then(() => {
-            alert('訂單已複製到剪貼簿！');
+            alert('訂單已複製到剪貼簿！即將為您打開喫果茶官方賬戶，請傳給我們喔～');
             window.location.href = 'https://line.me/R/ti/p/@737zcrpz';
         })
         .catch(err => {
