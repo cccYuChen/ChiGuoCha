@@ -1,0 +1,255 @@
+/* style.css */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --grass-green: #4CAF50;
+    --light-green: #81C784;
+    --cream-white: #FFF8E7;
+    --dark-green: #388E3C;
+    --light-gray: #F5F5F5;
+}
+
+body {
+    font-family: "Microsoft JhengHei", sans-serif;
+    padding: 20px;
+    background-color: var(--cream-white);
+}
+
+/* 搜尋框樣式 */
+.search-container {
+    margin: 20px auto;
+    width: 80%;
+    max-width: 600px;
+}
+
+#search {
+    width: 100%;
+    padding: 10px;
+    border: 2px solid var(--grass-green);
+    border-radius: 5px;
+    font-size: 16px;
+    background-color: white;
+}
+
+/* 菜單容器樣式 */
+.menu-container {
+    display: block;
+    width: 90%;
+    margin: 20px auto;
+}
+
+.menu-item {
+    background: white;
+    padding: 12px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    text-align: center;
+    border: 1px solid var(--light-green);
+}
+
+.menu-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(76, 175, 80, 0.2);
+}
+
+.menu-item h3 {
+    margin-bottom: 8px;
+    font-size: 16px;
+}
+
+.menu-item p {
+    color: #666;
+    font-size: 14px;
+}
+
+/* 備註區樣式 */
+.note-container {
+    margin: 20px auto;
+    width: 80%;
+}
+
+#note {
+    width: 100%;
+    height: 100px;
+    padding: 10px;
+    border: 2px solid var(--grass-green);
+    border-radius: 5px;
+    resize: vertical;
+    background-color: white;
+}
+
+/* 購物車樣式 */
+.cart-container {
+    margin: 20px auto;
+    width: 80%;
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    border: 1px solid var(--light-green);
+}
+
+#cartList {
+    list-style: none;
+    margin: 10px 0;
+}
+
+.cart-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--light-green);
+}
+
+.delete-btn {
+    color: var(--grass-green);
+    cursor: pointer;
+    font-weight: bold;
+}
+
+#checkoutBtn {
+    width: 100%;
+    padding: 10px;
+    background: var(--grass-green);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: background-color 0.3s;
+}
+
+#checkoutBtn:hover {
+    background: var(--dark-green);
+}
+
+/* 彈窗樣式 */
+#drinkModal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+}
+
+.modal-content {
+    background: white;
+    width: 80%;
+    max-width: 600px;
+    margin: 50px auto;
+    padding: 20px;
+    border-radius: 8px;
+    border: 2px solid var(--grass-green);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+#closeModal {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+.options {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.options label {
+    margin: 5px 0;
+    padding: 5px;
+    border-radius: 4px;
+}
+
+#addToCart {
+    width: 100%;
+    padding: 10px;
+    background: var(--grass-green);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: background-color 0.3s;
+}
+
+#addToCart:hover {
+    background: var(--dark-green);
+}
+
+/* 修改系列標題樣式 */
+.series-title {
+    font-size: 20px;
+    font-weight: bold;
+    margin: 10px 0;
+    padding: 15px;
+    border-radius: 8px;
+    background: var(--grass-green);
+    color: white;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.series-title:hover {
+    background: var(--dark-green);
+}
+
+.series-title:after {
+    content: '▼';
+    font-size: 14px;
+    transition: transform 0.3s;
+}
+
+.series-title.collapsed:after {
+    transform: rotate(-90deg);
+}
+
+.series-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 15px;
+    margin: 15px 0;
+    max-height: 1000px;
+    opacity: 1;
+    transition: all 0.3s ease-in-out;
+    overflow: hidden;
+}
+
+.series-container.collapsed {
+    max-height: 0;
+    opacity: 0;
+    margin: 0;
+}
+
+/* 選項樣式 */
+.options input[type="checkbox"] {
+    accent-color: var(--grass-green);
+}
+
+.options input[type="radio"] {
+    accent-color: var(--grass-green);
+}
+
+/* 價格顯示樣式 */
+#modalPrice, #totalPrice {
+    color: var(--grass-green);
+    font-weight: bold;
+}

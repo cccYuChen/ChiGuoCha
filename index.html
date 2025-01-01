@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>飲料點單系統</title>
+    <link rel="stylesheet" href="777.css">
+</head>
+<body>
+    <script src="777.js"></script>
+    <!-- 1. 搜尋框 -->
+    <div class="search-container">
+        <input type="text" id="search" placeholder="搜尋飲品...">
+    </div>
+
+    <!-- 2. 菜單容器 -->
+    <div class="menu-container" id="menuContainer">
+        
+    </div>
+
+    <div class="note-container">
+        <textarea id="note" placeholder="請留下領取時間與姓名..."></textarea>
+    </div>
+
+   
+    <div class="cart-container">
+        <h3>購物車</h3>
+        <ul id="cartList"></ul>
+        <p>總金額: <span id="totalPrice">0</span> 元</p>
+        <button id="checkoutBtn">送出訂單</button>
+    </div>
+
+
+    <div id="drinkModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="drinkTitle">飲品名稱</h3>
+                <p id="modalPrice">0元</p>
+                <button id="closeModal">&times;</button>
+            </div>
+            <div class="options">
+                <label>
+                    杯型：
+                    <input type="radio" name="size" value="胖杯"> 胖杯
+                    <input type="radio" name="size" value="大杯"> 大杯
+                    <input type="radio" name="size" value="中杯" checked> 中杯
+                </label>
+                <label>
+                    冰塊：
+                    <input type="radio" name="ice" value="熱" checked> 熱
+                    <input type="radio" name="ice" value="溫"> 溫
+                    <input type="radio" name="ice" value="去冰"> 去冰
+                    <input type="radio" name="ice" value="微冰"> 微冰
+                    <input type="radio" name="ice" value="少冰"> 少冰
+                    <input type="radio" name="ice" value="正常冰"> 正常冰
+                </label>
+                <label>
+                    甜度：
+                    <input type="number" id="sweetness" min="1" max="10" value="5">
+                </label>
+                <label>
+                    加料：
+                    <input type="checkbox" value="珍珠"> 珍珠
+                    <input type="checkbox" value="寒天"> 寒天
+                    <input type="checkbox" value="椰果"> 椰果
+                    <input type="checkbox" value="愛玉"> 愛玉
+                    <input type="checkbox" value="布丁"> 布丁
+                    <input type="checkbox" value="仙草"> 仙草
+                    <input type="checkbox" value="蜂蜜"> 蜂蜜
+                    <input type="checkbox" value="蘆薈"> 蘆薈
+                    <input type="checkbox" value="雲朵"> 雲朵
+                </label>
+                <label>
+                    <input type="checkbox" id="ecoCup"> 使用環保杯
+                </label>
+                <button id="addToCart">加入購物車</button>
+            </div>
+        </div>
+    </div>
+
+    
+</body>
+</html>
