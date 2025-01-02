@@ -19,7 +19,7 @@
     </div>
 
     <div class="note-container">
-        <textarea id="note" placeholder="請留下領取時間與姓名..."></textarea>
+        <textarea id="note" placeholder="請留下領取時間與姓名及有要記杯嗎？"></textarea>
     </div>
 
    
@@ -41,9 +41,11 @@
             <div class="options">
                 <label>
                     杯型：
-                    <input type="radio" name="size" value="胖杯"> 胖杯
-                    <input type="radio" name="size" value="大杯"> 大杯（一般杯）
-                    <input type="radio" name="size" value="中杯" checked> 中杯
+                    <select name="size" id="sizeSelect">
+                        <option value="胖杯">胖杯(Large)</option>
+                        <option value="大杯">大杯(Regular)</option>
+                        <option value="中杯" selected>中杯(Small)</option>
+                    </select>
                 </label>
                 <label>
                     冰塊：
@@ -68,7 +70,7 @@
                     <input type="checkbox" value="仙草"> 仙草(Grass jelly)
                     <input type="checkbox" value="蜂蜜"> 蜂蜜(Honey)
                     <input type="checkbox" value="蘆薈"> 蘆薈(Aloe vera)
-                    <input type="checkbox" value="雲朵"> 雲朵(bring your own cup )
+                    <input type="checkbox" value="雲朵"> 雲朵(marshmallow)
                 </label>
                 <label>
                     <input type="checkbox" id="ecoCup"> 使用環保杯(bring your own cup )

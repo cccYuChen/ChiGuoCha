@@ -1,6 +1,10 @@
 // script.js
 // 定義飲品菜單結構
 const menuStructure = {
+    "買一送一": {
+        "本日買一送一": { basePrice: 0 },
+        "購買": { basePrice: "時價" }
+    },
     "純茶系列": {
         "蜜香紅茶": { basePrice: 25 },
         "茉香綠茶": { basePrice: 25 },
@@ -308,12 +312,23 @@ function initializeMenu() {
         for (let drink in menuStructure[series]) {
             const drinkElement = document.createElement('div');
             drinkElement.className = 'menu-item';
-            drinkElement.innerHTML = `
-                <h3>${drink}</h3>
-                <p>${menuStructure[series][drink].basePrice}元起</p>
-            `;
+            
+            // 如果是買一送一系列，添加特殊樣式和文字
+            if (series === "買一送一") {
+                drinkElement.className += ' buy-one-get-one';
+                drinkElement.innerHTML = `
+                    <h3>${drink}</h3>
+                    <p>點擊查看</p>
+                `;
+            } else {
+                drinkElement.innerHTML = `
+                    <h3>${drink}</h3>
+                    <p>${menuStructure[series][drink].basePrice}元起</p>
+                `;
+            }
+            
             drinkElement.onclick = (e) => {
-                e.stopPropagation(); // 防止點擊飲品時觸發系列的收合
+                e.stopPropagation();
                 openModal(series, drink);
             };
             seriesContainer.appendChild(drinkElement);
@@ -334,9 +349,19 @@ function toggleSeries(titleElement) {
 
 // 打開彈窗
 function openModal(series, drink) {
+    if (series === "買一送一" && drink === "本日買一送一") {
+        window.open('https://www.instagram.com/chiguocha?igsh=MWFseWd6cDZ2cWp4NQ==', '_blank');
+        return;
+    }
+    
     const modal = document.getElementById('drinkModal');
     const title = document.getElementById('drinkTitle');
     title.textContent = `${series} - ${drink}`;
+    
+    // 如果是特價茶飲，修改價格顯示
+    if (series === "買一送一" && drink === "購買") {
+        document.getElementById('modalPrice').textContent = '時價';
+    }
     
     // 擴展非飲品系列的判斷
     const nonBeverageSeries = [
@@ -420,7 +445,7 @@ function openModal(series, drink) {
 // 更新彈窗中的價格
 function updateModalPrice(series, drink) {
     const basePrice = menuStructure[series][drink].basePrice;
-    const size = document.querySelector('input[name="size"]:checked').value;
+    const size = document.getElementById('sizeSelect').value;
     const toppings = Array.from(document.querySelectorAll('input[type="checkbox"]:checked'))
         .filter(cb => cb.value !== 'ecoCup');
     const useEcoCup = document.getElementById('ecoCup').checked;
@@ -449,6 +474,12 @@ function initializeEventListeners() {
             const [series, drink] = document.getElementById('drinkTitle').textContent.split(' - ');
             updateModalPrice(series, drink);
         });
+    });
+
+    // 修改杯型監聽器
+    document.getElementById('sizeSelect').addEventListener('change', () => {
+        const [series, drink] = document.getElementById('drinkTitle').textContent.split(' - ');
+        updateModalPrice(series, drink);
     });
 }
 
@@ -494,29 +525,12 @@ function addToCart() {
     let cartItemText = drink;
     let price;
     
-    // 判斷是否為特殊系列（需要顯示加料的非飲料系列）
-    const isSpecialSeries = (series === "厚片系列" && drink === "厚片吐司") ||
-                           (series === "鬆餅系列" && drink === "現烤鬆餅") ||
-                           (series === "盒酥系列" && drink === "熱壓吐司A加B");
-                           
-    // 判斷是否為完全不需選項的非飲料系列
-    const isSimpleSeries = ["挫冰系列", "水果切盤", "季節限定！"].includes(series);
+    // 判斷是否為特價茶飲
+    const isSpecialPrice = series === "買一送一" && drink === "購買";
     
-    if (isSimpleSeries) {
-        // 完全不需選項的非飲料系列
-        price = menuStructure[series][drink].basePrice;
-    } else if (isSpecialSeries) {
-        // 需要加料的非飲料系列
-        const toppings = Array.from(document.querySelectorAll('input[type="checkbox"]:checked'))
-            .map(cb => cb.parentNode.textContent.trim())
-            .filter(text => !text.includes('環保杯'));
-        if (toppings.length > 0) {
-            cartItemText += ` - 加料: ${toppings.join(', ')}`;
-        }
-        price = calculatePrice(series, drink, null, toppings, false);
-    } else {
-        // 飲料系列
-        const size = document.querySelector('input[name="size"]:checked').value;
+    if (isSpecialPrice) {
+        // 特價茶飲的處理
+        const size = document.getElementById('sizeSelect').value;
         const ice = document.querySelector('input[name="ice"]:checked').value;
         const sweetness = document.getElementById('sweetness').value;
         const toppings = Array.from(document.querySelectorAll('input[type="checkbox"]:checked'))
@@ -535,13 +549,60 @@ function addToCart() {
             cartItemText += ' (環保杯)';
         }
         
-        price = calculatePrice(series, drink, size, toppings, useEcoCup);
+        price = "時價";
+    } else {
+        // 判斷是否為特殊系列（需要顯示加料的非飲料系列）
+        const isSpecialSeries = (series === "厚片系列" && drink === "厚片吐司") ||
+                               (series === "鬆餅系列" && drink === "現烤鬆餅") ||
+                               (series === "盒酥系列" && drink === "熱壓吐司A加B");
+                               
+        // 判斷是否為完全不需選項的非飲料系列
+        const isSimpleSeries = ["挫冰系列", "水果切盤", "季節限定！"].includes(series);
+        
+        if (isSimpleSeries) {
+            // 完全不需選項的非飲料系列
+            price = menuStructure[series][drink].basePrice;
+        } else if (isSpecialSeries) {
+            // 需要加料的非飲料系列
+            const toppings = Array.from(document.querySelectorAll('input[type="checkbox"]:checked'))
+                .map(cb => cb.parentNode.textContent.trim())
+                .filter(text => !text.includes('環保杯'));
+                if (toppings.length > 0) {
+                    cartItemText += ` - 加料: ${toppings.join(', ')}`;
+            }
+            price = calculatePrice(series, drink, null, toppings, false);
+        } else {
+            // 飲料系列
+            const size = document.getElementById('sizeSelect').value;
+            const ice = document.querySelector('input[name="ice"]:checked').value;
+            const sweetness = document.getElementById('sweetness').value;
+            const toppings = Array.from(document.querySelectorAll('input[type="checkbox"]:checked'))
+                .map(cb => cb.parentNode.textContent.trim())
+                .filter(text => !text.includes('環保杯'));
+            const useEcoCup = document.getElementById('ecoCup').checked;
+            
+            cartItemText += ` (${size})`;
+            cartItemText += ` - ${ice}`;
+            cartItemText += ` - ${sweetness}分甜`;
+            
+            if (toppings.length > 0) {
+                cartItemText += ` - 加料: ${toppings.join(', ')}`;
+            }
+            if (useEcoCup) {
+                cartItemText += ' (環保杯)';
+            }
+            
+            price = calculatePrice(series, drink, size, toppings, useEcoCup);
+        }
     }
     
     const cartItem = document.createElement('li');
     cartItem.className = 'cart-item';
+    if (isSpecialPrice) {
+        cartItem.className += ' special-price';
+    }
     cartItem.innerHTML = `
-        ${cartItemText} - ${price}元
+        ${cartItemText} - ${price}${typeof price === 'number' ? '元' : ''}
         <span class="delete-btn">×</span>
     `;
     
@@ -596,34 +657,47 @@ function calculatePrice(series, drink, size, toppings, useEcoCup) {
 function updateTotalPrice() {
     const cartItems = document.getElementsByClassName('cart-item');
     let total = Array.from(cartItems)
+        .filter(item => !item.classList.contains('special-price'))  // 排除特價品項
         .reduce((sum, item) => {
             const price = parseInt(item.textContent.match(/(\d+)元/)[1]);
             return sum + price;
         }, 0);
     
-    // 九折優惠，四捨五入
-    total = Math.round(total * 0.9);
+    // 九折優惠，無條件捨去
+    total = Math.floor(total * 0.9);
     document.getElementById('totalPrice').textContent = total;
 }
 
 // 結帳
 function checkout() {
     const note = document.getElementById('note').value;
-    const cartItems = Array.from(document.getElementsByClassName('cart-item'))
-        .map(item => {
-            // 移除刪除按鈕的文字，只保留訂單內容
-            const itemText = item.textContent.replace('×', '').trim();
-            return itemText;
-        })
-        .join('\n');
+    
+    // 分別獲取一般訂單和特價訂單
+    const regularItems = Array.from(document.getElementsByClassName('cart-item'))
+        .filter(item => !item.classList.contains('special-price'))
+        .map(item => item.textContent.replace('×', '').trim());
+    
+    const specialItems = Array.from(document.getElementsByClassName('cart-item'))
+        .filter(item => item.classList.contains('special-price'))
+        .map(item => item.textContent.replace('×', '').trim());
+    
     const total = document.getElementById('totalPrice').textContent;
     
-    const orderContent = `
-備註：${note}
-訂單內容：
-${cartItems}
-總計：${total}元（已打九折）
-    `.trim();
+    let orderContent = `備註：${note}\n訂單內容：\n`;
+    
+    // 先加入一般訂單
+    if (regularItems.length > 0) {
+        orderContent += regularItems.join('\n');
+        orderContent += `\n總計：${total}元（已打九折）\n`;
+    }
+    
+    // 再加入特價訂單
+    if (specialItems.length > 0) {
+        orderContent += '\n買一送一訂單：\n';
+        orderContent += specialItems.join('\n');
+    }
+    
+    orderContent = orderContent.trim();
     
     // 複製到剪貼簿
     navigator.clipboard.writeText(orderContent)
@@ -634,4 +708,4 @@ ${cartItems}
         .catch(err => {
             console.error('複製失敗：', err);
         });
-}
+} 
