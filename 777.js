@@ -634,7 +634,7 @@ function calculatePrice(series, drink, size, toppings, useEcoCup) {
                 // 大杯維持基本價格
                 break;
             case '中杯':
-                price -= 10;  // 中杯減10元
+                price -= 5;  // 中杯減5元
                 break;
         }
         
